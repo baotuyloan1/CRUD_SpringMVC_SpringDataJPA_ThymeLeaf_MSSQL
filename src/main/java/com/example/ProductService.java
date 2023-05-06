@@ -18,16 +18,15 @@ public class ProductService {
     return repository.findAll();
   }
 
-  public void save(Product product){
-       repository.save(product);
+  public void save(Product product) {
+    repository.save(product);
   }
 
-  public Product get(Long id){
-      return repository.findById(id).get();
+  public Product get(Long id) {
+    return repository.findById(id).get();
   }
 
-  public void delete(Long id){
-      repository.deleteById(id);
+  public void delete(Long id) {
+    repository.deleteById(id);
   }
-
 }

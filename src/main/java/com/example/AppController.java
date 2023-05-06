@@ -1,5 +1,7 @@
 package com.example;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,5 +59,36 @@ public class AppController {
   public String deleteProduct(@PathVariable(name = "id") Long id) {
     service.delete(id);
     return "redirect:/";
+  }
+
+  @RequestMapping("/reflect/test")
+  public String reflect() {
+    try {
+      Class<?> clazz = Class.forName("com.example.Product");
+
+      Field[] fields = clazz.getFields();
+
+      for (Field field : fields) {
+        System.out.println("Field :" + field.getName() + ", Type: " + field.getType());
+      }
+
+      Field field = clazz.getDeclaredField("id");
+
+      field.setAccessible(true);
+
+      System.out.println(field);
+
+      Method[] methods = clazz.getDeclaredMethods();
+      for (Method method : methods) {
+        System.out.println(
+            "Method: " + method.getName() + ", Return Type: " + method.getReturnType());
+      }
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchFieldException e) {
+      throw new RuntimeException(e);
+    }
+
+    return "index";
   }
 }
