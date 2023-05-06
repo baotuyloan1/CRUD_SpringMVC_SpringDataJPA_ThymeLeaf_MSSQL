@@ -24,16 +24,20 @@ public class AppController {
   }
 
   @RequestMapping("/")
-  public String viewHomePage(Model model) {
+  public String viewHomePage(Model model, @Param("keyword") String keyword) {
 //    List<Product> productList = service.listAll();
 //    System.out.println("List" + productList);
 //    model.addAttribute("listProducts", productList);
-    return viewPage(model,1, "name","desc");
+
+    if (keyword == null){
+      return viewPage(model,1, "name","desc",null);
+    }
+    return viewPage(model,1, "name","desc",keyword);
   }
 
   @RequestMapping("/page/{pageNum}")
-  public String viewPage(Model model, @PathVariable(name = "pageNum") int pageNum, @Param("sortField") String sortField, @Param("sortDir") String sortDir) {
-    Page<Product> page = service.listAll(pageNum, sortField, sortDir);
+  public String viewPage(Model model, @PathVariable(name = "pageNum") int pageNum, @Param("sortField") String sortField, @Param("sortDir") String sortDir, String keyword) {
+    Page<Product> page = service.listAll(pageNum, sortField, sortDir,keyword);
     List<Product> productList = page.getContent();
     model.addAttribute("currentPage",pageNum);
     model.addAttribute("totalPages",page.getTotalPages());
@@ -42,6 +46,7 @@ public class AppController {
     model.addAttribute("sortField",sortField);
     model.addAttribute("sortDir", sortDir);
     model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc": "asc");
+    model.addAttribute("keyword",keyword);
     return "index";
   }
 
@@ -98,7 +103,7 @@ public class AppController {
       Method[] methods = clazz.getDeclaredMethods();
       for (Method method : methods) {
         System.out.println(
-            "Method: " + method.getName() + ", Return Type: " + method.getReturnType());
+                "Method: " + method.getName() + ", Return Type: " + method.getReturnType());
       }
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);

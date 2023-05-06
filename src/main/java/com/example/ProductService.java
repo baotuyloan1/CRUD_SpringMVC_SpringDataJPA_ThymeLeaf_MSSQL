@@ -17,8 +17,19 @@ public class ProductService {
     this.repository = repository;
   }
 
-  public Page<Product> listAll(int pageNum, String sortField, String sortDir) {
+  public Page<Product> listAll(int pageNum, String sortField, String sortDir, String keyword) {
     int pageSize = 25;
+    if (keyword != null ) {
+      Pageable pageable =
+          PageRequest.of(
+              pageNum - 1,
+              pageSize,
+              sortDir.equals("asc")
+                  ? Sort.by(sortField).ascending()
+                  : Sort.by(sortField).descending());
+      return repository.searchSimplify(keyword, pageable);
+    }
+
     Pageable pageable =
         PageRequest.of(
             pageNum - 1,
