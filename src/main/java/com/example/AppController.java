@@ -3,6 +3,9 @@ package com.example;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,9 +25,23 @@ public class AppController {
 
   @RequestMapping("/")
   public String viewHomePage(Model model) {
-    List<Product> productList = service.listAll();
-    System.out.println("List" + productList);
-    model.addAttribute("listProducts", productList);
+//    List<Product> productList = service.listAll();
+//    System.out.println("List" + productList);
+//    model.addAttribute("listProducts", productList);
+    return viewPage(model,1, "name","desc");
+  }
+
+  @RequestMapping("/page/{pageNum}")
+  public String viewPage(Model model, @PathVariable(name = "pageNum") int pageNum, @Param("sortField") String sortField, @Param("sortDir") String sortDir) {
+    Page<Product> page = service.listAll(pageNum, sortField, sortDir);
+    List<Product> productList = page.getContent();
+    model.addAttribute("currentPage",pageNum);
+    model.addAttribute("totalPages",page.getTotalPages());
+    model.addAttribute("totalItems",page.getTotalElements());
+    model.addAttribute("listProducts",productList);
+    model.addAttribute("sortField",sortField);
+    model.addAttribute("sortDir", sortDir);
+    model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc": "asc");
     return "index";
   }
 

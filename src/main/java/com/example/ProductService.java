@@ -1,6 +1,9 @@
 package com.example;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +17,17 @@ public class ProductService {
     this.repository = repository;
   }
 
-  public List<Product> listAll() {
-    return repository.findAll();
+  public Page<Product> listAll(int pageNum, String sortField, String sortDir) {
+    int pageSize = 25;
+    Pageable pageable =
+        PageRequest.of(
+            pageNum - 1,
+            pageSize,
+            sortDir.equals("asc")
+                ? Sort.by(sortField).ascending()
+                : Sort.by(sortField).descending());
+
+    return repository.findAll(pageable);
   }
 
   public void save(Product product) {
